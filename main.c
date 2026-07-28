@@ -1,38 +1,77 @@
 #include <ctype.h>
 #include <ncurses.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <string.h>
 
-int main(int argc, char *argv[]) {
-  const char palavra[] = "lutar";
+#define WORD_SIZE 5
+#define MAX_ATTEMPTS 6
 
+void init_ui() {
   initscr();
   noecho();
   curs_set(0);
-  box(stdscr, 0, 0);
+}
 
-  int h, w;
-  getmaxyx(stdscr, h, w);
-
+void init_colors() {
   start_color();
-
   init_pair(1, COLOR_WHITE, COLOR_BLACK);
   init_pair(2, COLOR_WHITE, COLOR_GREEN);
   init_pair(3, COLOR_WHITE, COLOR_RED);
   init_pair(4, COLOR_WHITE, COLOR_YELLOW);
+}
+
+void exit_ui() {
+  endwin();
+}
+
+void draw_header(int width, int tentativas) {
+  mvprintw(0, (width/2) - 6, "TENTATIVAS %d", tentativas);
+}
+
+void draw_footer() {
+  attron(COLOR_PAIR(2));
+  mvprintw(LINES - 4, 1, " ");
+  attroff(COLOR_PAIR(2));
+  printw(" Letra certa");
+
+  attron(COLOR_PAIR(4));
+  mvprintw(LINES - 3, 1, " ");
+  attroff(COLOR_PAIR(4));
+  printw(" Posição errada");
   
-  int tentativas = 5;
+  attron(COLOR_PAIR(3));
+  mvprintw(LINES - 2, 1, " ");
+  attroff(COLOR_PAIR(3));
+  printw(" Letra errada");
+
+}
+
+int main(int argc, char *argv[]) {
+  const char palavra[] = "lutar";
+
+  init_ui();
+  init_colors();
+
+  box(stdscr, 0, 0);
+
+  int h, w;
+  getmaxyx(stdscr, h, w);
+  
+  int tentativas = MAX_ATTEMPTS;
 
   bool guessed = false;
 
   int linha_atual = 0;
 
+  draw_footer();
+  refresh();
+
   while (tentativas > 0 && !guessed) {
-    mvprintw(0, (w/2) - 7, "TENTATIVAS: %d", tentativas);
+    draw_header(w, tentativas);
+    char tentativa[WORD_SIZE + 1];
 
-    char tentativa[6];
-
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < WORD_SIZE; i++) {
       char ch = getch();
       tentativa[i] = ch;
 
@@ -55,11 +94,12 @@ int main(int argc, char *argv[]) {
 
       attroff(COLOR_PAIR(2));
       attroff(COLOR_PAIR(3));
+      attroff(COLOR_PAIR(4));
 
       refresh();
     }
 
-    tentativa[5] = '\0';
+    tentativa[WORD_SIZE] = '\0';
     
     if (strcmp(tentativa, palavra) == 0) {
       guessed = true;
@@ -70,8 +110,8 @@ int main(int argc, char *argv[]) {
   }
 
   getch();
-
-  endwin();
+  exit_ui();
+  
   return 0;
 }
 
