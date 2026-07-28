@@ -1,0 +1,12 @@
+*.out
+*.exe
+*.app
+
+*.o
+*.obj
+*.a
+*.so
+
+build/
+bin/
+out/
