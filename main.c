@@ -1,4 +1,5 @@
 #include <ctype.h>
+#include <locale.h>
 #include <ncurses.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -8,6 +9,7 @@
 #define MAX_ATTEMPTS 6
 
 void init_ui() {
+  setlocale(LC_ALL, "");
   initscr();
   noecho();
   curs_set(0);
@@ -16,9 +18,9 @@ void init_ui() {
 void init_colors() {
   start_color();
   init_pair(1, COLOR_WHITE, COLOR_BLACK);
-  init_pair(2, COLOR_WHITE, COLOR_GREEN);
-  init_pair(3, COLOR_WHITE, COLOR_RED);
-  init_pair(4, COLOR_WHITE, COLOR_YELLOW);
+  init_pair(2, COLOR_BLACK, COLOR_GREEN);
+  init_pair(3, COLOR_BLACK, COLOR_RED);
+  init_pair(4, COLOR_BLACK, COLOR_YELLOW);
 }
 
 void exit_ui() {
@@ -31,20 +33,19 @@ void draw_header(int width, int tentativas) {
 
 void draw_footer() {
   attron(COLOR_PAIR(2));
-  mvprintw(LINES - 4, 1, " ");
+  mvprintw(LINES - 2, 1, " ");
   attroff(COLOR_PAIR(2));
-  printw(" Letra certa");
-
-  attron(COLOR_PAIR(4));
-  mvprintw(LINES - 3, 1, " ");
-  attroff(COLOR_PAIR(4));
-  printw(" Posição errada");
+  printw(" Certa ");
   
   attron(COLOR_PAIR(3));
-  mvprintw(LINES - 2, 1, " ");
+  printw(" ");
   attroff(COLOR_PAIR(3));
-  printw(" Letra errada");
+  printw(" Errada ");
 
+  attron(COLOR_PAIR(4));
+  printw(" ");
+  attroff(COLOR_PAIR(4));
+  printw(" Posição errada");
 }
 
 int main(int argc, char *argv[]) {
