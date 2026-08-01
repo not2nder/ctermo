@@ -10,16 +10,17 @@
 #define MAX_ATTEMPTS 6
 
 int main(void) {
-  const char palavra[] = "lutar";
+  char *palavra = "lutar";
+  char board[MAX_ATTEMPTS][WORD_SIZE + 1] = {0};
+  bool guessed = false;
 
   init_ui();
   init_colors();
 
   int tentativas = MAX_ATTEMPTS;
 
-  bool guessed = false;
-
   int linha_atual = 0;
+  int caractere_atual = 0;
 
   refresh();
 
@@ -27,45 +28,52 @@ int main(void) {
     draw_frame();
     draw_header(tentativas);
     draw_footer();
+    draw_board(board, palavra);
+    draw_current(board, linha_atual);
 
-    char tentativa[WORD_SIZE + 1];
+    int ch = getch();
 
-    for (int i = 0; i < WORD_SIZE; i++) {
-      char ch = getch();
-      tentativa[i] = ch;
-
-      if (ch == palavra[i]) {
-        attron(COLOR_PAIR(2));
-      }
-      else if (strchr(palavra, ch) != NULL) {
-        attron(COLOR_PAIR(4));
-      }
-      else {
-        attron(COLOR_PAIR(3));
-      }
-
-      mvprintw(
-        (LINES/2) - 2 + linha_atual,
-        (COLS/2) - 6 + (i * 3),
-        " %c ",
-        toupper(ch)
-      );
-
-      attroff(COLOR_PAIR(2));
-      attroff(COLOR_PAIR(3));
-      attroff(COLOR_PAIR(4));
-
-      refresh();
+    if (ch == KEY_RESIZE) {
+      clear();
+      continue;
     }
 
-    tentativa[WORD_SIZE] = '\0';
-    
-    if (strcmp(tentativa, palavra) == 0) {
-      guessed = true;
+    if (ch == KEY_BACKSPACE) {
+      if (caractere_atual > 0) {
+        caractere_atual--;
+        board[linha_atual][caractere_atual] = 0;
+        clear();
+      }
+      continue;
     }
 
-    tentativas--;
-    linha_atual++;
+    if (ch == '\n') {
+      if (caractere_atual != WORD_SIZE) {
+        continue;
+      }
+
+      char tentativa[WORD_SIZE + 1];
+
+      memcpy(tentativa, board[linha_atual], WORD_SIZE);
+
+      tentativa[WORD_SIZE] = '\0';
+ 
+      if (strcmp(tentativa, palavra) == 0) {
+        guessed = true;
+      }
+
+      linha_atual++;
+      caractere_atual = 0;
+      tentativas--;
+
+      draw_board(board, palavra);
+      continue;
+    }
+        
+    if (caractere_atual < WORD_SIZE && isalpha(ch)) {
+      board[linha_atual][caractere_atual] = ch;
+      caractere_atual++;
+    }    
   }
 
   getch();

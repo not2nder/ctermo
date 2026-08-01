@@ -1,4 +1,6 @@
 #include <locale.h>
+#include <string.h>
+#include <ctype.h>
 #include <ncurses.h>
 #include "../include/ui.h"
 
@@ -8,6 +10,7 @@ void init_ui(void) {
   initscr();
   noecho();
   curs_set(0);
+  keypad(stdscr, TRUE);
 }
 
 void exit_ui(void) {
@@ -52,4 +55,67 @@ void draw_footer(void) {
 
 void draw_frame(void) {
   box(stdscr, 0, 0);
+}
+
+void draw_board(char board[6][6], char *palavra) {
+  const int BOARD_Y = (LINES/2) - 2;
+  const int BOARD_X = (COLS/2) - 6;
+
+  for (int i = 0; i < 6; i++) {
+    for (int j = 0; j < 5; j++) {
+      char ch = board[i][j];
+
+      if (ch == '\0'){
+        continue;
+      }
+
+      int color;
+
+      if (ch == palavra[j]) {
+        color = 2;
+      } else if (strchr(palavra, ch) != NULL) {
+        color = 4;
+      } else {
+        color = 3;
+      }
+
+      attron(COLOR_PAIR(color));
+
+      if (ch != '\0') {
+        mvprintw(
+          BOARD_Y + i,
+          BOARD_X + j * 3,
+          " %c ",
+          toupper((unsigned char) ch)
+        );
+      }
+
+      attroff(COLOR_PAIR(color));
+    }
+  }
+}
+
+void draw_current(char board[6][6], int row) {
+  int board_y = (LINES / 2) - 2;
+  int board_x = (COLS / 2) - 6;
+
+  for (int col = 0; col < 5; col++) {
+    char ch = board[row][col];
+
+    if (ch != '\0') {
+      mvprintw(
+        board_y + row,
+        board_x + col * 3,
+        " %c ",
+        toupper((unsigned char)ch)
+      );
+
+    } else {
+      mvprintw(
+        board_y + row,
+        board_x + col * 3,
+        "   "
+      );
+    }
+  }
 }
