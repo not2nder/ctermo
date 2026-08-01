@@ -13,7 +13,7 @@ Clone do jogo **Termo** desenvolvido em **C** utilizando a biblioteca **ncurses*
 ## 📦 Compilação
 
 ```bash
-gcc main.c -o main -lncurses
+make
 ```
 
 ## 🛠️ Execução
