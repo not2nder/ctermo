@@ -27,28 +27,38 @@ void exit_ui() {
   endwin();
 }
 
-void draw_header(int width, int tentativas) {
-  mvprintw(0, (width/2) - 6, "TENTATIVAS %d", tentativas);
+void draw_header(int tentativas) {
+  mvprintw(1, 1, "TENTATIVAS: %d", tentativas);
+  
+  for (int i = 1; i < COLS - 1; i++) {
+    mvprintw(2, i, "─");
+  }
 }
 
 void draw_footer() {
+  attron(A_REVERSE);
   attron(COLOR_PAIR(2));
-  mvprintw(LINES - 2, 1, " ");
+  mvprintw(LINES - 2, 1, "⬤");
   attroff(COLOR_PAIR(2));
+  attroff(A_REVERSE);
   printw(" Certa ");
-  
+
+  attron(A_REVERSE);
   attron(COLOR_PAIR(3));
-  printw(" ");
+  printw("⬤");
   attroff(COLOR_PAIR(3));
+  attroff(A_REVERSE);
   printw(" Errada ");
 
+  attron(A_REVERSE);
   attron(COLOR_PAIR(4));
-  printw(" ");
+  printw("⬤");
   attroff(COLOR_PAIR(4));
+  attroff(A_REVERSE);
   printw(" Posição errada");
 }
 
-int main(int argc, char *argv[]) {
+int main() {
   const char palavra[] = "lutar";
 
   init_ui();
@@ -56,9 +66,6 @@ int main(int argc, char *argv[]) {
 
   box(stdscr, 0, 0);
 
-  int h, w;
-  getmaxyx(stdscr, h, w);
-  
   int tentativas = MAX_ATTEMPTS;
 
   bool guessed = false;
@@ -69,7 +76,7 @@ int main(int argc, char *argv[]) {
   refresh();
 
   while (tentativas > 0 && !guessed) {
-    draw_header(w, tentativas);
+    draw_header(tentativas);
     char tentativa[WORD_SIZE + 1];
 
     for (int i = 0; i < WORD_SIZE; i++) {
@@ -87,8 +94,8 @@ int main(int argc, char *argv[]) {
       }
 
       mvprintw(
-        (h/2) - 2 + linha_atual,
-        (w/2) - 6 + (i * 3),
+        (LINES/2) - 2 + linha_atual,
+        (COLS/2) - 6 + (i * 3),
         " %c ",
         toupper(ch)
       );
