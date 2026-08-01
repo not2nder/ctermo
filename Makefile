@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -Wall -Wextra -pedantic -std=c11 -Iinclude
 LIBS = -lncurses
 
-TARGET = ctermo
+TARGET = termo
 SRC = src/main.c src/ui.c src/colors.c
 
 all: $(TARGET)
