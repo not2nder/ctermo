@@ -1,9 +1,9 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -pedantic -std=c11
+CFLAGS = -Wall -Wextra -pedantic -std=c11 -Iinclude
 LIBS = -lncurses
 
 TARGET = ctermo
-SRC = main.c
+SRC = src/main.c src/ui.c src/colors.c
 
 all: $(TARGET)
 
