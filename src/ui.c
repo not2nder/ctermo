@@ -11,6 +11,7 @@ void init_ui(void) {
   noecho();
   curs_set(0);
   keypad(stdscr, TRUE);
+  mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
 }
 
 void exit_ui(void) {
